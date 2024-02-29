@@ -1,10 +1,18 @@
 #! /bin/bash
 
-DEPLOYMENT_PORT=$1
-CONTAINER_NAME=$2
-VOLUME_PATH_HOST=$3
-VOLUME_PATH_CONTAINER=$4
+source ./.env set
 
-DEFAULT_IMAGE=alpine:3.19.1
+echo "installing container"
+echo "$CONTAINER_NAME"
+echo "$VOLUME_PATH_HOST"
+echo "$VOLUME_PATH_CONTAINER"
+echo "$IMAGE_CONTAINER"
 
-docker run -dt -p $DEPLOYMENT_PORT:3030 --name $CONTAINER_NAME -v $VOLUME_PATH_HOST:$VOLUME_PATH_CONTAINER $DEFAULT_IMAGE
+docker build --no-cache . -t $IMAGE_CONTAINER
+if [ $? -eq 0 ];then
+	echo "image was created successfully"
+else
+	echo "image was not created PANICCCC!!!"
+	exit 1
+fi
+docker run -dt --name $CONTAINER_NAME -v $VOLUME_PATH_HOST:$VOLUME_PATH_CONTAINER $IMAGE_CONTAINER
